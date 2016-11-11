@@ -1,0 +1,803 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="spring," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=" />
+
+
+
+
+
+
+<meta name="description" content="aop中的几个基本概念:
+1.连接点：由两个信息确定，一个是方法表示的程序的执行点，另一个是用相对点表示的方位。spring使用切点对执行点进行定位，而方位则是在增强的类型中定义的。JoinPoint
+2.切点：每一个程序类都有多个连接点，如一个拥有两个方法的类，这两个方法都是连接点，aop通过切点来定位到特定的连接点，准确的说是定位到特定的方法上。
+3.增强：除了提供一段程序代码之外，还提供了执">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring的aop部分">
+<meta property="og:url" content="http://yoursite.com/2016/05/19/spring的aop部分/index.html">
+<meta property="og:site_name" content="cc-five-hexo">
+<meta property="og:description" content="aop中的几个基本概念:
+1.连接点：由两个信息确定，一个是方法表示的程序的执行点，另一个是用相对点表示的方位。spring使用切点对执行点进行定位，而方位则是在增强的类型中定义的。JoinPoint
+2.切点：每一个程序类都有多个连接点，如一个拥有两个方法的类，这两个方法都是连接点，aop通过切点来定位到特定的连接点，准确的说是定位到特定的方法上。
+3.增强：除了提供一段程序代码之外，还提供了执">
+<meta property="og:updated_time" content="2016-05-19T13:32:53.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="spring的aop部分">
+<meta name="twitter:description" content="aop中的几个基本概念:
+1.连接点：由两个信息确定，一个是方法表示的程序的执行点，另一个是用相对点表示的方位。spring使用切点对执行点进行定位，而方位则是在增强的类型中定义的。JoinPoint
+2.切点：每一个程序类都有多个连接点，如一个拥有两个方法的类，这两个方法都是连接点，aop通过切点来定位到特定的连接点，准确的说是定位到特定的方法上。
+3.增强：除了提供一段程序代码之外，还提供了执">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> spring的aop部分 | cc-five-hexo </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">cc-five-hexo</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">let it be beautiful</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                spring的aop部分
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-19T21:14:25+08:00" content="2016-05-19">
+              2016-05-19
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/19/spring的aop部分/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/19/spring的aop部分/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/05/19/spring的aop部分/" class="leancloud_visitors" data-flag-title="spring的aop部分">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>aop中的几个基本概念:</p>
+<p>1.连接点：由两个信息确定，一个是方法表示的程序的执行点，另一个是用相对点表示的方位。spring使用切点对执行点进行定位，而方位则是在增强的类型中定义的。JoinPoint</p>
+<p>2.切点：每一个程序类都有多个连接点，如一个拥有两个方法的类，这两个方法都是连接点，aop通过切点来定位到特定的连接点，准确的说是定位到特定的方法上。</p>
+<p>3.增强：除了提供一段程序代码之外，还提供了执行点的方位信息。结合执行点的方位信息和执行点信息，就可以找到特定的连接点。</p>
+<p>所以，只有结合切点和增强两者，才能确定特定的连接点并实施增强逻辑。织入是将增强添加到目标类具体的连接点上的过程。</p>
+<p>Spring AOP的核心就是动态代理技术：jdk动态代理，和CGLib动态代理。</p>
+<p><strong><em>没有使用@AspectJ的spring aop的配置是比较麻烦的。</em></strong></p>
+<p>//当使用jdk的动态代理时：(只能为接口创建代理实例)<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public class PerformaceHandler implements InvocationHandler &#123;</span><br><span class="line"></span><br><span class="line">	private Object target;</span><br><span class="line"></span><br><span class="line">	public PerformaceHandler(Object target)&#123;</span><br><span class="line"></span><br><span class="line">​​		this.target = target;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public Object invoke(Object proxy, Method method, Object[] args)</span><br><span class="line"></span><br><span class="line">	throws Throwable &#123;</span><br><span class="line"></span><br><span class="line">	PerformanceMonitor.begin(target.getClass().getName()+<span class="string">"."</span>+ method.getName());</span><br><span class="line"></span><br><span class="line">	Object obj = method.invoke(target, args);</span><br><span class="line"></span><br><span class="line">	PerformanceMonitor.end();</span><br><span class="line"></span><br><span class="line">	<span class="built_in">return</span> obj;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>test:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">​ForumService target = new ForumServiceImpl();</span><br><span class="line"></span><br><span class="line">PerformaceHandler handler = new PerformaceHandler(target);</span><br><span class="line"></span><br><span class="line">ForumService proxy = (ForumService) Proxy.newProxyInstance(</span><br><span class="line"></span><br><span class="line">target.getClass().getClassLoader(),</span><br><span class="line"></span><br><span class="line">target.getClass().getInterfaces(),</span><br><span class="line"></span><br><span class="line">handler);</span><br><span class="line"></span><br><span class="line">​​proxy.removeForum(10);</span><br><span class="line"></span><br><span class="line">​​proxy.removeTopic(1012);</span><br></pre></td></tr></table></figure>
+<p>xml中也需要配置。</p>
+<p>切面：一般切面(仅包含Advice)，切点的切面(Advice,pointCut)，引介切面</p>
+<p>PointcutAdvisor有6个实现。</p>
+<p>Advisor需要配合一个增强才会起作用，这边将一个前置增强装配到一个切面中去了，之后，配置切面就可以了。</p>
+<pre><code>​&lt;!-- 普通方法名匹配切面 --&gt;
+&lt;bean id=&quot;waiterTarget&quot; class=&quot;com.baobaotao.advisor.Waiter&quot; /&gt;
+
+​&lt;bean id=&quot;sellerTarget&quot; class=&quot;com.baobaotao.advisor.Seller&quot; /&gt;
+
+&lt;bean id=&quot;greetingAdvice&quot; class=&quot;com.baobaotao.advisor.GreetingBeforeAdvice&quot; /&gt;
+
+&lt;bean id=&quot;greetingAdvisor&quot; class=&quot;com.baobaotao.advisor.GreetingAdvisor&quot;
+​​p:advice-ref=&quot;greetingAdvice&quot; /&gt;
+
+&lt;bean id=&quot;parent&quot; abstract=&quot;true&quot;
+​​class=&quot;org.springframework.aop.framework.ProxyFactoryBean&quot;
+p:interceptorNames=&quot;greetingAdvisor&quot; p:proxyTargetClass=&quot;true&quot; /&gt;
+
+​&lt;bean id=&quot;waiter&quot; parent=&quot;parent&quot; p:target-ref=&quot;waiterTarget&quot; /&gt;
+
+​&lt;bean id=&quot;seller&quot; parent=&quot;parent&quot; p:target-ref=&quot;sellerTarget&quot; /&gt;
+</code></pre><p>以上是静态的切面配置</p>
+<p>当然还有动态切面</p>
+<p>在Spring中，不管是静态切面还是动态切面，使用的都是动态代理技术，所谓的静态切面是指生成代理对象时就确定好了，增强是否需要织入到目标类的连接点上，而动态切面是指在运行期间根据方法的入参来决定是否需要织入到目标类的连接点上。</p>
+<h2 id="注解的方式进行处理-AspcetJ。"><a href="#注解的方式进行处理-AspcetJ。" class="headerlink" title="注解的方式进行处理@AspcetJ。"></a>注解的方式进行处理@AspcetJ。</h2><p>有了注解之后，使用就方便很多了，</p>
+<pre><code>@Retention(RetentionPolicy.RUNTIME)  
+@Target(ElementType.METHOD)
+@Inherited
+public @interface Cacheable {
+
+Class&lt;? extends Entity&gt; group();
+
+CacheOperation cacheOperation() default CacheOperation.NOP;
+
+Class&lt;? extends Entity&gt;[] flushGroup() default {};
+
+}
+
+@Around(&quot;@annotation(cacheable)&quot;)
+public Object cacheable(final ProceedingJoinPoint pjp,
+final Cacheable cacheable)throws Throwable {
+    if(cacheable.cacheOperation() == CacheOperation.NOP) {
+        return pjp.proceed();
+    }
+    String group = cacheable.group().getName(),
+            cacheKey = getCacheKey(pjp);
+    Cache cache = getCache(group);
+    Object result = null;
+    if(cacheable.cacheOperation() == CacheOperation.CACHING) {
+        Element element = cache.get(cacheKey);
+        if(element == null) {
+            result = pjp.proceed();
+            if(result == null || result instanceof Serializable) {
+                element = new Element(cacheKey, (Serializable)result);
+                LOG.info(&quot;正在缓存{0}对象。&quot;, cacheKey);
+                cache.put(element);
+            }else {
+                LOG.warn(&quot;{0}指定方法返回对象{1}不能被序列化，不能缓存。&quot;, cacheKey, result);
+            }
+        }else {
+            LOG.info(&quot;从缓存中获取{0}对象。&quot;, cacheKey);
+            result = element.getObjectValue();
+        }
+    }else if(cacheable.cacheOperation() == CacheOperation.FLUSH_CACHE) {
+        result = pjp.proceed();
+        for(Class&lt;? extends Entity&gt; clazz : cacheable.flushGroup()) {
+            String groupName = clazz.getName();
+            if(!groupName.equals(group)) {
+                LOG.info(&quot;删除缓存组{0}所有的缓存对象。&quot;, groupName);
+                getCache(group).removeAll();
+            }
+
+        }
+        LOG.info(&quot;删除缓存组{0}所有的缓存对象。&quot;, group);
+        cache.removeAll();
+    }
+    return result;
+}
+</code></pre><p>以上，主要是aop的部分应用。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/spring/" rel="tag">#spring</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/19/spring事务管理及资源加载机制/" rel="next" title="spring事务管理及资源加载机制">
+                <i class="fa fa-chevron-left"></i> spring事务管理及资源加载机制
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/19/spring的IOC容器的初始化/" rel="prev" title="spring的IOC容器的初始化">
+                spring的IOC容器的初始化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/05/19/spring的aop部分/"
+           data-title="spring的aop部分" data-url="http://yoursite.com/2016/05/19/spring的aop部分/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/head_image.jpg"
+               alt="chenmanman" />
+          <p class="site-author-name" itemprop="name">chenmanman</p>
+          <p class="site-description motion-element" itemprop="description">等一场雨</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#注解的方式进行处理-AspcetJ。"><span class="nav-number">1.</span> <span class="nav-text">注解的方式进行处理@AspcetJ。</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenmanman</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v="></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v="></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v="></script>
+<script type="text/javascript" src="/js/src/post-details.js?v="></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v="></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"chenmanman"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("RD906gTKDzFNDbA75pLSSVFC-gzGzoHsz", "ksKwl3XMGJ0qUjv0hOdWJMxC");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+</body>
+</html>
